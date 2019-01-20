@@ -20,5 +20,12 @@ def index():
 
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
-    session["board"][row][col] = "X"
+    game = session["board"]
+    turn = session["turn"]
+    game[row][col] = session["turn"]
+    if session["turn"] == "X":
+        session["turn"] = "O"
+    else:
+        session["turn"] = "X"
+    
     return redirect(url_for("index"))
