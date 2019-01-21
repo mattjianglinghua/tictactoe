@@ -20,7 +20,11 @@
     </head>
     <body>
         {% if winner %}
-        <p>The winner is {{ winner }}.</p>
+            {% if winner == "tie" %}
+                <p> It's a tie! </p>
+            {% else %}
+                <p>The winner is {{ winner }}.</p>
+                {% endif %}
         {% endif %}
 
         <table>

@@ -16,6 +16,7 @@ def index():
         session["board"] = [[None, None, None], [None, None, None], [None, None, None]]
         session["turn"] = "X"
         session["winner"] = None
+        session["tie"] = False
         session["history"] = []
 
     return render_template("game.html", game=session["board"], turn=session["turn"], winner=session["winner"])
@@ -52,11 +53,14 @@ def play(row, col):
                     return False
 
         #otherwise if it's a tie
+        session["tie"] = True
         return True
-
     #display game over if it's over...
     if gameover():
-        session["winner"] = turn
+        if session["tie"]:
+            session["winner"] = "tie"
+        else:
+            session["winner"] = turn
         return redirect(url_for("index"))
 
     #...otherwise change turns
