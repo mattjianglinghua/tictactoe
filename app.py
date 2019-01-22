@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, redirect, url_for
 from flask_session import Session
 from tempfile import mkdtemp
+from copy import deepcopy
 
 app = Flask(__name__)
 
@@ -24,26 +25,28 @@ def index():
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
     #mark board and add previous board to history
-    session["history"].append(session["board"])
-    #print(session["history"])
+    board = deepcopy(session["board"])
+    print(board)
+    session["history"].append(board)
+    print(session["history"])
     session["board"][row][col] = session["turn"]
   
     #current states
-    board = session["board"]
+    
     turn = session["turn"]
 
     #function to check for winner
     def gameover():
         #check rows
-        for row in board:
+        for row in session["board"]:
             if turn == row[0] == row[1] == row[2]:
                 return True
         #check columns
         for col in range(3):
-            if turn == board[0][col] == board[1][col] == board[2][col]:
+            if turn == session["board"][0][col] == session["board"][1][col] == session["board"][2][col]:
                 return True
         #check diagonals 
-        if turn == board[0][0] == board[1][1] == board[2][2] or turn == board[0][2] == board[1][1] == board[2][0]:
+        if turn == session["board"][0][0] == session["board"][1][1] == session["board"][2][2] or turn == session["board"][0][2] == session["board"][1][1] == session["board"][2][0]:
             return True
 
         #check if board is completely filled yet
@@ -77,4 +80,4 @@ def reset():
     session["winner"] = None
     return redirect(url_for("index"))
 
-
+    
