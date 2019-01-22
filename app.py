@@ -77,7 +77,7 @@ def play(row, col):
     #update winner if necessary
     if gamestatus() == 1:
         session["winner"] = turn
-    else gamestatus() == 0:
+    elif gamestatus() == 0:
         session["winner"] = "tie"
 
     return redirect(url_for("index"))
