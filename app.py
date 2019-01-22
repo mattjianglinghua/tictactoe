@@ -25,14 +25,18 @@ def index():
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
     #mark board and add previous board to history
-    board = deepcopy(session["board"])
-    print(board)
-    session["history"].append(board)
-    print(session["history"])
+    # board = deepcopy(session["board"])
+    # print(board)
+    # session["history"].append(board)
+    # print(session["history"])
     session["board"][row][col] = session["turn"]
+
+    session["history"].append((row, col))
+    print(session["history"])
+
   
     #current states
-    
+    board = session["board"]
     turn = session["turn"]
 
     #function to check for winner
@@ -49,15 +53,15 @@ def play(row, col):
         if turn == session["board"][0][0] == session["board"][1][1] == session["board"][2][2] or turn == session["board"][0][2] == session["board"][1][1] == session["board"][2][0]:
             return True
 
-        #check if board is completely filled yet
+        #if it's not a tie
         for row in board:
             for cell in row:
                 if cell == None:
                     return False
-
         #otherwise if it's a tie
         session["tie"] = True
         return True
+
     #display game over if it's over...
     if gameover():
         if session["tie"]:
