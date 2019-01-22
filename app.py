@@ -24,59 +24,55 @@ def index():
 
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
-    #mark board and add previous board to history
-    # board = deepcopy(session["board"])
-    # print(board)
-    # session["history"].append(board)
-    # print(session["history"])
+
+    #mark board
     session["board"][row][col] = session["turn"]
 
+    #store move into history
     session["history"].append((row, col))
     print(session["history"])
-
-  
+      
     #current states
     board = session["board"]
     turn = session["turn"]
 
-    #function to check for winner
-    def gameover():
+    def gamestatus():
+        """Returns 1 if a winner, 0 if tie, -1 if still playing."""
+
         #check rows
         for row in session["board"]:
             if turn == row[0] == row[1] == row[2]:
-                return True
+                return 1
         #check columns
         for col in range(3):
             if turn == session["board"][0][col] == session["board"][1][col] == session["board"][2][col]:
-                return True
+                return 1
         #check diagonals 
         if turn == session["board"][0][0] == session["board"][1][1] == session["board"][2][2] or turn == session["board"][0][2] == session["board"][1][1] == session["board"][2][0]:
-            return True
+            return 1
 
         #if it's not a tie
         for row in board:
             for cell in row:
                 if cell == None:
-                    return False
+                    return -1
         #otherwise if it's a tie
         session["tie"] = True
-        return True
+        return 0
 
-    #display game over if it's over...
-    if gameover():
-        if session["tie"]:
-            session["winner"] = "tie"
-        else:
-            session["winner"] = turn
+    #check game status
+    if gamestatus() == 1:
+        session["winner"] = turn
         return redirect(url_for("index"))
-
-    #...otherwise change turns
-    if session["turn"] == "X":
-        session["turn"] = "O"
+    elif gamestatus() == 0:
+        session["winner"] = "tie"
+        return redirect(url_for("index"))
     else:
-        session["turn"] = "X"
-            
-    return redirect(url_for("index"))
+        if session["turn"] == "X":
+            session["turn"] = "O"
+        else:
+            session["turn"] = "X"         
+        return redirect(url_for("index"))
 
 @app.route("/reset")
 def reset():
