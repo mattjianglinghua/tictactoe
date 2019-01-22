@@ -27,7 +27,7 @@ def index():
         session["winner"] = None
         session["history"] = []
 
-    return render_template("game.html", game=session["board"], turn=session["turn"], winner=session["winner"])
+    return render_template("game.html", game=session["board"], turn=session["turn"], winner=session["winner"], history=session["history"])
 
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
@@ -68,19 +68,19 @@ def play(row, col):
         session["tie"] = True
         return 0
 
-    #check game status
+    #switch move
+    if session["turn"] == "X":
+        session["turn"] = "O"
+    else:
+        session["turn"] = "X" 
+
+    #update winner if necessary
     if gamestatus() == 1:
         session["winner"] = turn
-        return redirect(url_for("index"))
-    elif gamestatus() == 0:
+    else gamestatus() == 0:
         session["winner"] = "tie"
-        return redirect(url_for("index"))
-    else:
-        if session["turn"] == "X":
-            session["turn"] = "O"
-        else:
-            session["turn"] = "X"         
-        return redirect(url_for("index"))
+
+    return redirect(url_for("index"))
 
 @app.route("/reset")
 def reset():
@@ -94,10 +94,11 @@ def reset():
 
 @app.route("/undo")
 def undo():
-    """Undo previous moves and switches turn."""
+    """Undo previous moves, removes any winner, switches turns."""
 
     move = session["history"].pop(0)
     session["board"][move[0]][move[1]] = None
+    session["winner"] = None
 
     #switch turns
     if session["turn"] == "X":

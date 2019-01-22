@@ -43,8 +43,10 @@
             {% endfor %}
         </table>
         
+        {% if history[0] %}
             <a href="{{ url_for('undo') }}">Undo Move</a>
-        
+        {% endif %}
+
         <a href="{{ url_for('reset') }}">Reset Game</a>
         
     </body>
