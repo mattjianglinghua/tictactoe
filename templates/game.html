@@ -42,7 +42,10 @@
                 </tr>
             {% endfor %}
         </table>
-
+        
+            <a href="{{ url_for('undo') }}">Undo Move</a>
+        
         <a href="{{ url_for('reset') }}">Reset Game</a>
+        
     </body>
 </html>

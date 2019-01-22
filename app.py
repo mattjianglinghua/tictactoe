@@ -10,6 +10,14 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+def switch():
+    """Switches whose turn it is."""
+    if session["turn"] == "X":
+        session["turn"] = "O"
+    else:
+        session["turn"] = "X"         
+    return redirect(url_for("index"))
+
 @app.route("/")
 def index():
 
@@ -17,19 +25,19 @@ def index():
         session["board"] = [[None, None, None], [None, None, None], [None, None, None]]
         session["turn"] = "X"
         session["winner"] = None
-        session["tie"] = False
         session["history"] = []
 
     return render_template("game.html", game=session["board"], turn=session["turn"], winner=session["winner"])
 
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
+    """Marks board, stores move into history, continues or ends game."""
 
     #mark board
     session["board"][row][col] = session["turn"]
 
     #store move into history
-    session["history"].append((row, col))
+    session["history"].insert(0, (row, col))
     print(session["history"])
       
     #current states
@@ -76,8 +84,27 @@ def play(row, col):
 
 @app.route("/reset")
 def reset():
+    """Resets board and session variables."""
+
     session["board"] = [[None, None, None], [None, None, None], [None, None, None]]
     session["winner"] = None
+    session["history"].clear()
+    session["turn"] = "X"
     return redirect(url_for("index"))
+
+@app.route("/undo")
+def undo():
+    """Undo previous moves and switches turn."""
+
+    move = session["history"].pop(0)
+    session["board"][move[0]][move[1]] = None
+
+    #switch turns
+    if session["turn"] == "X":
+        session["turn"] = "O"
+    else:
+        session["turn"] = "X"         
+    return redirect(url_for("index"))    
+
 
     
